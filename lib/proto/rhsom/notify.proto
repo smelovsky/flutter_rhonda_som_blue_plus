@@ -1,0 +1,51 @@
+//
+// Copyright (C) 2022-2023 Rhonda Software.
+// All rights reserved.
+//
+
+syntax = "proto2";
+option java_package = "com.rhonda.app.communication.protocol.impl.protobuf.camera.general";
+
+package Camera.General.Notify;
+
+
+// Major version incremented every time backward compatibility is broken
+// Actual version of protocol is sent (as uint32) during initial sync with Camera
+// and its client (see description of Camera.General.Notify.InitialSync message).
+enum ProtocolVersionMajor { PROTOCOL_VERSION_MAJOR = 1; }
+enum ProtocolVersionMinor { PROTOCOL_VERSION_MINOR = 1; }
+
+// type_url: Camera.General.Notify.InitialSync
+// This notification guaranteed to be the first message sent on making connection.
+// For UART/SPI interfaces this message is sent right after camera turned on.
+// For TCP/BT message is sent after connection established.
+message InitialSync {
+    optional uint32 protocol_version_major = 1;
+    optional uint32 protocol_version_minor = 3;
+    optional bool   initial_setup_done     = 4;
+}
+
+// type_url: Camera.General.Notify.Event
+message Event {
+    enum Reason {
+        STREAM_STARTED          = 1;
+        STREAM_STOPPED          = 2;
+        RECORD_STARTED          = 3;
+        RECORD_STOPPED          = 4;
+        STORAGE_FORMATTED       = 5;
+        STORAGE_FULL            = 6;
+        STORAGE_ERROR           = 7;
+        TIME_SET                = 8;
+        WIFI_SET                = 9;
+        UPGRADE                 = 12;
+        INITIAL_SETUP_DONE      = 13;
+        EVENT_STARTED           = 14;
+        EVENT_STOPPED           = 15;
+        STORAGE_INJECTED        = 16;
+        STORAGE_EJECTED         = 17;
+        WIFI_STARTED            = 18;
+        WIFI_STOPPED            = 19;
+    }
+
+    optional Reason reason          = 1;
+}

@@ -1,0 +1,167 @@
+//
+// Copyright (C) 2016-2017 Rhonda Software.
+// All rights reserved.
+//
+
+syntax = "proto2";
+
+
+package Camera.Streaming;
+
+enum Profile {
+    PROF_360P30 = 0;
+    PROF_180P30 = 1;
+    PROF_540P30 = 2;
+    PROF_720P30 = 3;
+}
+
+// Aux message type not to be sent standalone
+message Stream {
+    optional uint32 id  = 1;
+    optional string url = 2;
+}
+
+// type_url: Camera.Streaming.SetProfile
+// Allowed from: Mobile App, Flight Controller
+message SetProfile {
+
+    optional Profile profile = 1;
+
+    // type_url: Camera.Streaming.SetProfile.Response
+    message Response {
+        optional ErrorCode ret = 1;
+    }
+    // type_url: Camera.Streaming.SetProfile.Notification
+    message Notification {
+        optional Profile profile = 2;
+    }
+}
+
+// type_url: Camera.Streaming.GetProfile
+// Allowed from: Mobile App, Flight Controller
+message GetProfile {
+
+    // type_url: Camera.Streaming.GetProfile.Response
+    message Response {
+        optional ErrorCode ret = 1;
+
+        optional Profile profile = 2;
+    }
+}
+
+// type_url: Camera.Streaming.Start
+// Allowed from: MA
+message Start {
+    repeated Stream streams = 1;
+
+    // type_url: Camera.Streaming.Start.Response
+    message Response {
+        // Return codes:
+        //  STATUS_SUCCESS
+        //  STATUS_INVALID_CONFIG
+        //  STATUS_UNKNOWN_ERROR - failure
+        optional ErrorCode ret = 1;
+    }
+
+	// type_url: Camera.Streaming.Start.Notification
+    message Notification {
+        optional ErrorCode ret = 1;
+    }
+}
+
+// type_url: Camera.Streaming.Stop
+// Allowed from: MA
+message Stop {
+
+    // type_url: Camera.Streaming.Stop.Response
+    message Response {
+        optional ErrorCode ret = 1;
+    }
+
+    // type_url: Camera.Streaming.Stop.Notification
+    message Notification {
+        optional ErrorCode ret = 1;
+    }
+}
+
+// type_url: Camera.Streaming.Status
+message Status {
+    enum StreamingStatus { STARTED = 0; STOPPED = 1; }
+
+    message Response {
+        // Return codes:
+        // STATUS_SUCCESS
+        // STATUS_UNKNOWN_ERROR
+        optional ErrorCode ret    = 1;
+        optional StreamingStatus  status = 2;
+    }
+}
+
+// type_url: Camera.Streaming.SwitchSensor
+// Allowed from: MA
+message SwitchSensor {
+    repeated Stream streams = 1;
+
+    // type_url: Camera.Streaming.SwitchSensor.Response
+    message Response {
+        // Return codes:
+        //  STATUS_SUCCESS
+        //  STATUS_INVALID_CONFIG
+        //  STATUS_UNKNOWN_ERROR - failure
+        optional ErrorCode ret = 1;
+    }
+}
+
+enum ErrorCode {
+    STATUS_SUCCESS = 0;
+
+    // Range of 1 - 99 is for generic errors
+    STATUS_UNKNOWN_ERROR = 1;
+    STATUS_HARDWARE_ERROR = 2;
+
+    // Range of 100 - 199 is for protocol errors
+    STATUS_UNKNOWN_REQUEST = 100;
+    STATUS_INVALID_SYNTAX = 101;
+    STATUS_INVALID_VALUE = 102;
+    STATUS_NOT_IMPLEMENTED = 103;
+    STATUS_NOT_AUTHORIZED = 104;
+    STATUS_AUTHORIZATION_ERROR = 105;
+    STATUS_TIMEDOUT = 106;
+    STATUS_BUSY = 107;
+
+    // Range of 200 - 299 is for storage-specific errors
+    STATUS_NO_SD_CARD = 201;
+    STATUS_SD_CARD_UNFORMATTED = 202;
+    STATUS_STORAGE_FAILURE = 203;
+    STATUS_STORAGE_FULL = 204;
+    STATUS_WRITE_PROTECT = 205;
+    STATUS_FILE_NOT_FOUND = 206;
+    STATUS_NOT_AN_OBJECT = 207;
+    STATUS_INVALID_FILE = 208;
+    STATUS_UNSUPPORTED_FILESYSTEM = 209;
+    STATUS_FILESYSTEM_CHECK_FAILURE = 210;
+    STATUS_FILENAME_TOO_LONG = 211;
+    STATUS_SD_CLASS_NOT_SUPPORTED = 212;
+    STATUS_LOW_SD_CAPACITY = 213;
+
+    // Range of 300-399 for connectivity-related errors
+    STATUS_STATUS_NO_NETWORK = 300;
+    STATUS_NOT_CONNECTED = 301;
+    STATUS_CONNECTION_ERROR = 302;
+    STATUS_NO_DHCP_LEASE = 303;
+    STATUS_NOT_CONFIGURED = 304;
+
+    // Range of 1000 - 1099 is for application-specific errors
+    STATUS_PERMISSION_DENIED = 1000;
+    STATUS_WRONG_STATE = 1001;
+    STATUS_INVALID_CONFIG = 1002;
+    STATUS_INVALID_SEQUENCE_ID = 1003;
+    STATUS_INVALID_CAMERA_ID = 1004;
+    STATUS_LOW_BATTERY = 1005;
+    STATUS_LENS_POSITION_NOT_SUPPORTED = 1006;
+    // Camera rejects requested operation because the temperature is high for this operation.
+    STATUS_HIGH_TEMPERATURE = 1007;
+
+    // Range of 2000 - 2099 is for streaming-specific errors
+    STATUS_CONNECTION_FAILED = 2000;
+}

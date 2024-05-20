@@ -1,0 +1,8 @@
+flutter_launcher_icons:
+  ios: true
+  android: "launcher_icon"
+  image_path: "assets/images/rhonda_launcher.png"
+  min_sdk_android: 21 # android min sdk min:16, default 21
+
+#terminal > pub get
+#terminal > flutter pub run flutter_launcher_icons

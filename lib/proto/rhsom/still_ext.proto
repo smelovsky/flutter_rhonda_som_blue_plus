@@ -1,0 +1,112 @@
+//
+// Copyright (C) 2016-2019 Rhonda Software.
+// All rights reserved.
+//
+
+syntax = "proto2";
+
+
+package CameraExt.Capture.Still;
+
+// Resolution of still capture
+enum Resolution {
+    RESOLUTION_12MP = 0;
+    RESOLUTION_16MP = 1;
+}
+
+// Still capture configuration
+// This is data type message, it can't be sent direclty
+message Config {
+    optional uint32 compression_ratio   = 1;
+    optional Resolution resolution      = 2;
+}
+
+// Request to set still capture settings for further still captures.
+// Camera does not store settings on NAND. Settings will be lost after reboot
+// allowed_state: Any
+// type_url: CameraExt.Capture.Still.SetSettings
+// Controller->Camera
+message SetSettings {
+    // Still capture configuration. Missing fields in config are ignored.
+    optional Config config = 1;
+
+    // Camera saves settings in case of successful result
+    // state_on_success: No change
+    // type_url: CameraExt.Capture.Still.SetStillSettings.Response
+    message Response {
+        // Return codes:
+        //  STATUS_SUCCESS
+        //  STATUS_INVALID_VALUE - Returned in case if config's parameters aren't supported
+        optional ErrorCode ret = 1;
+    }
+}
+
+// Request to get still capture settings
+// allowed_state: Any
+// type_url: CameraExt.Capture.Still.GetSettings
+// Controller->Camera
+message GetSettings {
+    // state_on_success: No change
+    // type_url: CameraExt.Capture.Still.GetSettings.Response
+    message Response {
+        // Return codes:
+        //  STATUS_SUCCESS
+        optional ErrorCode ret = 1;
+
+        optional Config config = 2; // Configuration of still capture
+    }
+}
+
+enum ErrorCode {
+    STATUS_SUCCESS = 0;
+
+    // Range of 1 - 99 is for generic errors
+    STATUS_UNKNOWN_ERROR = 1;
+    STATUS_HARDWARE_ERROR = 2;
+
+    // Range of 100 - 199 is for protocol errors
+    STATUS_UNKNOWN_REQUEST = 100;
+    STATUS_INVALID_SYNTAX = 101;
+    STATUS_INVALID_VALUE = 102;
+    STATUS_NOT_IMPLEMENTED = 103;
+    STATUS_NOT_AUTHORIZED = 104;
+    STATUS_AUTHORIZATION_ERROR = 105;
+    STATUS_TIMEDOUT = 106;
+    STATUS_BUSY = 107;
+
+    // Range of 200 - 299 is for storage-specific errors
+    STATUS_NO_SD_CARD = 201;
+    STATUS_SD_CARD_UNFORMATTED = 202;
+    STATUS_STORAGE_FAILURE = 203;
+    STATUS_STORAGE_FULL = 204;
+    STATUS_WRITE_PROTECT = 205;
+    STATUS_FILE_NOT_FOUND = 206;
+    STATUS_NOT_AN_OBJECT = 207;
+    STATUS_INVALID_FILE = 208;
+    STATUS_UNSUPPORTED_FILESYSTEM = 209;
+    STATUS_FILESYSTEM_CHECK_FAILURE = 210;
+    STATUS_FILENAME_TOO_LONG = 211;
+    STATUS_SD_CLASS_NOT_SUPPORTED = 212;
+    STATUS_LOW_SD_CAPACITY = 213;
+
+    // Range of 300-399 for connectivity-related errors
+    STATUS_STATUS_NO_NETWORK = 300;
+    STATUS_NOT_CONNECTED = 301;
+    STATUS_CONNECTION_ERROR = 302;
+    STATUS_NO_DHCP_LEASE = 303;
+    STATUS_NOT_CONFIGURED = 304;
+
+    // Range of 1000 - 1099 is for application-specific errors
+    STATUS_PERMISSION_DENIED = 1000;
+    STATUS_WRONG_STATE = 1001;
+    STATUS_INVALID_CONFIG = 1002;
+    STATUS_INVALID_SEQUENCE_ID = 1003;
+    STATUS_INVALID_CAMERA_ID = 1004;
+    STATUS_LOW_BATTERY = 1005;
+    STATUS_LENS_POSITION_NOT_SUPPORTED = 1006;
+    // Camera rejects requested operation because the temperature is high for this operation.
+    STATUS_HIGH_TEMPERATURE = 1007;
+
+    // Range of 2000 - 2099 is for streaming-specific errors
+    STATUS_CONNECTION_FAILED = 2000;
+}
