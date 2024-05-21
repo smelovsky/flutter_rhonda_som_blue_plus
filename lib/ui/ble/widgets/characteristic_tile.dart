@@ -42,6 +42,15 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
 
   BluetoothCharacteristic get c => widget.characteristic;
 
+  List<int> _getCommand() {
+
+    List<int> command = [48]; // '0'
+
+    print("_getCommand ${command}");
+
+    return command;
+  }
+
   List<int> _getRandomBytes() {
     final math = Random();
     return [math.nextInt(255), math.nextInt(255), math.nextInt(255), math.nextInt(255)];
@@ -59,6 +68,7 @@ class _CharacteristicTileState extends State<CharacteristicTile> {
   Future onWritePressed() async {
     try {
       await c.write(_getRandomBytes(), withoutResponse: c.properties.writeWithoutResponse);
+      //await c.write(_getCommand(), withoutResponse: c.properties.writeWithoutResponse);
       Snackbar.show(ABC.c, "Write: Success", success: true);
       if (c.properties.read) {
         await c.read();
